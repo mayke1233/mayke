@@ -32,6 +32,10 @@ export interface Listing {
   offers: Promo[];
   creativeRefreshedAt: string | null;
   imageCount: number;
+  costKnown?: boolean;
+  fullKnown?: boolean;
+  feeEstimated?: boolean;
+  permalink?: string;
 }
 
 export interface Campaign {
@@ -54,6 +58,7 @@ export interface Question {
   status: "aberta" | "respondida";
   answer: string | null;
   answeredBy: "sac" | "voce" | null;
+  mlQuestionId?: number;
 }
 
 export type Effect =
@@ -83,6 +88,8 @@ export interface AgentAction {
   effect: Effect | null;
   createdAt: string;
   resolvedAt: string | null;
+  delivery?: "local" | "mercadolivre" | "nao_enviada" | "falhou";
+  deliveryDetail?: string;
 }
 
 export interface AgentNote {
@@ -125,6 +132,13 @@ export interface Account {
   city: string;
 }
 
+export interface Connection {
+  mode: "demonstracao" | "mercadolivre";
+  userId?: number;
+  syncedAt?: string | null;
+  notice?: string | null;
+}
+
 export interface AppState {
   version: 1;
   account: Account;
@@ -134,4 +148,5 @@ export interface AppState {
   questions: Question[];
   actions: AgentAction[];
   meetings: Meeting[];
+  connection: Connection;
 }

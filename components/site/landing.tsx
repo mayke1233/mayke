@@ -34,10 +34,10 @@ export function Landing() {
           <span>Mayke</span>
         </Link>
         <nav className="nav-links" aria-label="Seções">
+          <a href="#conta">Conta</a>
           <a href="#squad">Squad</a>
           <a href="#regua">Régua</a>
-          <a href="#pauta">Pauta</a>
-          <Link href="/painel">Painel</Link>
+          <Link href="/conexao">Conectar</Link>
         </nav>
         <Link className="btn" href="/painel">
           Abrir o escritório
@@ -54,16 +54,15 @@ export function Landing() {
               régua eles executam. O que passa do limite chega na sua fila, com o antes e o depois.
             </p>
             <div className="cta-row">
-              <Link className="btn" href="/painel">
-                Entrar na Casa Norte
+              <Link className="btn" href="/conexao">
+                Conectar Mercado Livre
               </Link>
-              <a className="btn secondary" href="#regua">
-                Ver a régua
-              </a>
+              <Link className="btn secondary" href="/painel">
+                Ver a demonstração
+              </Link>
             </div>
             <p className="fine">
-              A conta Casa Norte é uma demonstração. O motor aplica as regras de verdade, neste escritório. Nada é
-              enviado ao Mercado Livre.
+              A autorização é a do Mercado Livre. Sem a sua conta conectada, o escritório abre a demonstração Casa Norte.
             </p>
           </div>
           <aside className="ata" aria-label="Prévia da reunião">
@@ -106,6 +105,30 @@ export function Landing() {
             ))}
           </div>
         </div>
+
+        <section className="section" id="conta">
+          <div className="section-head">
+            <p className="eyebrow">Sua conta</p>
+            <h2>O squad lê a conta que você autorizar.</h2>
+          </div>
+          <div className="steps">
+            <article className="step">
+              <p className="index">01</p>
+              <h3>Aplicativo no DevCenter</h3>
+              <p>Você cria o aplicativo no Mercado Livre e cola aqui o App ID, a Secret Key e a URL de retorno.</p>
+            </article>
+            <article className="step">
+              <p className="index">02</p>
+              <h3>Autorização da conta</h3>
+              <p>O login acontece no Mercado Livre. O Mayke guarda o acesso nesta máquina e renova sozinho.</p>
+            </article>
+            <article className="step">
+              <p className="index">03</p>
+              <h3>Custo e depois a pauta</h3>
+              <p>Informe custo e frete. Aí o squad publica preço e resposta. Promoção, ads, imagem e Full ficam na ata.</p>
+            </article>
+          </div>
+        </section>
 
         <section className="section">
           <div className="section-head">

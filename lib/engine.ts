@@ -113,6 +113,7 @@ function planLiquidation(listing: Listing, rules: Rules): Planned | null {
 }
 
 function planCommercial(listing: Listing, rules: Rules): Planned | null {
+  if (listing.costKnown === false) return null;
   const liquidation = planLiquidation(listing, rules);
   if (liquidation) return liquidation;
 
@@ -236,6 +237,7 @@ function planCreative(listing: Listing, rules: Rules, now: Date): Planned | null
 }
 
 function planFull(listing: Listing, rules: Rules): Planned | null {
+  if (listing.fullKnown === false) return null;
   const daily = dailySales(listing);
   if (daily <= 0) return null;
   const needed = Math.ceil(daily * rules.fullCoverDays - listing.fullStock);
@@ -498,6 +500,12 @@ function buildMeeting(state: AppState, created: AgentAction[], unmatched: string
   if (unmatched.length) {
     parts.push(
       `${unmatched.length === 1 ? "Uma pergunta segue" : `${unmatched.length} perguntas seguem`} sem resposta automática.`,
+    );
+  }
+  const missingCost = state.listings.filter((listing) => listing.costKnown === false).length;
+  if (missingCost) {
+    parts.push(
+      `${missingCost} ${missingCost === 1 ? "anúncio está" : "anúncios estão"} sem custo cadastrado. O preço deles não foi alterado.`,
     );
   }
   const summary = parts.join(" ");

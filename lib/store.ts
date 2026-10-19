@@ -22,7 +22,10 @@ async function read(): Promise<AppState> {
   try {
     const raw = await readFile(file, "utf8");
     const parsed: unknown = JSON.parse(raw);
-    if (isState(parsed)) return parsed;
+    if (isState(parsed)) {
+      if (!parsed.connection) parsed.connection = { mode: "demonstracao", syncedAt: null, notice: null };
+      return parsed;
+    }
   } catch {
     // arquivo ausente ou inválido: a demonstração recomeça do seed
   }
@@ -31,10 +34,10 @@ async function read(): Promise<AppState> {
   return seed;
 }
 
-export function updateState(change: (state: AppState) => AppState): Promise<AppState> {
+export function updateState(change: (state: AppState) => AppState | Promise<AppState>): Promise<AppState> {
   const run = chain.then(async () => {
     const current = await read();
-    const next = change(current);
+    const next = await change(current);
     await write(next);
     return next;
   });

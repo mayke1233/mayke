@@ -20,9 +20,19 @@ export function Painel() {
         <div>
           <p className="eyebrow">Painel</p>
           <h1>{state.account.name}</h1>
-          <p className="muted">O squad opera esta conta de demonstração. Rode a reunião para ver a pauta de agora.</p>
+          <p className="muted">
+            {state.connection.mode === "mercadolivre"
+              ? "Conta lida do Mercado Livre. Rode a reunião para publicar o que a régua permitir."
+              : "Demonstração Casa Norte. Conecte a sua conta para operar anúncios reais."}
+          </p>
         </div>
       </header>
+      {state.connection.mode === "demonstracao" ? (
+        <p className="banner">
+          Esta ainda é a conta fictícia. <Link href="/conexao">Conectar Mercado Livre</Link>
+        </p>
+      ) : null}
+      {state.connection.notice ? <p className="banner">{state.connection.notice}</p> : null}
       <div className="kpis">
         <article className="kpi">
           <span>Faturamento em 30 dias</span>

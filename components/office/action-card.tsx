@@ -38,7 +38,10 @@ export function ActionCard({ action, state }: { action: AgentAction; state: AppS
         {action.beforeLabel} → {action.afterLabel}
         {delta != null ? ` · ${pp(delta)}` : ""}
       </p>
-      <p className="faint">{RULE_LABEL[action.rule] ?? action.rule}</p>
+      <p className="faint">
+        {RULE_LABEL[action.rule] ?? action.rule}
+        {action.deliveryDetail ? ` · ${action.deliveryDetail}` : ""}
+      </p>
       {action.status === "pendente" ? (
         <div className="row" style={{ marginTop: "0.7rem" }}>
           <button className="btn small" type="button" disabled={office.busy} onClick={() => void office.decide(action.id, "aprovar")}>

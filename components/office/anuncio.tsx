@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ActionCard } from "@/components/office/action-card";
 import { useOffice } from "@/components/office/office-context";
 import { brl, coverLabel, pct } from "@/lib/format";
@@ -10,9 +11,18 @@ import { scenarios } from "@/lib/scenarios";
 
 export function Anuncio() {
   const params = useParams<{ id: string }>();
-  const { state } = useOffice();
+  const { state, refresh, busy } = useOffice();
+  const listingForForm = state?.listings.find((item) => item.id === params.id);
+  const [cost, setCost] = useState("");
+  const [shipping, setShipping] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!listingForForm) return;
+    setCost(String(listingForForm.cost));
+    setShipping(String(listingForForm.shippingCost));
+  }, [listingForForm]);
   if (!state) return <p className="loading">Abrindo o anúncio…</p>;
-  const listing = state.listings.find((item) => item.id === params.id);
+  const listing = listingForForm;
   if (!listing) {
     return (
       <p className="empty">
@@ -63,6 +73,50 @@ export function Anuncio() {
               <span>{pct(quote.marginPct)}</span>
             </div>
           </div>
+          {listing.costKnown === false ? <p className="banner">Sem custo, o squad não mexe neste preço.</p> : null}
+          {listing.feeEstimated ? <p className="faint">A tarifa não veio da API e está estimada em 16%.</p> : null}
+          <form
+            className="stack"
+            style={{ marginTop: "0.9rem" }}
+            onSubmit={(event) => {
+              event.preventDefault();
+              setNotice(null);
+              void fetch(`/api/listings/${listing.id}/costs`, {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ cost: Number(cost), shippingCost: Number(shipping) }),
+              })
+                .then(async (response) => {
+                  const data = (await response.json()) as { error?: string };
+                  if (!response.ok) throw new Error(data.error || "Não salvei o custo.");
+                  await refresh();
+                  setNotice("Custo salvo. A próxima reunião já usa este número.");
+                })
+                .catch((error: unknown) => setNotice(error instanceof Error ? error.message : "Falha ao salvar."));
+            }}
+          >
+            <div className="field-grid">
+              <label className="field">
+                <span>Custo do produto</span>
+                <input type="number" min="0" step="0.01" value={cost} onChange={(event) => setCost(event.target.value)} />
+              </label>
+              <label className="field">
+                <span>Frete que você paga</span>
+                <input type="number" min="0" step="0.01" value={shipping} onChange={(event) => setShipping(event.target.value)} />
+              </label>
+            </div>
+            <button className="btn small" type="submit" disabled={busy}>
+              Salvar custo
+            </button>
+            {notice ? <p className="faint">{notice}</p> : null}
+          </form>
+          {listing.permalink ? (
+            <p style={{ marginTop: "0.7rem" }}>
+              <a href={listing.permalink} target="_blank" rel="noreferrer">
+                Abrir anúncio no Mercado Livre
+              </a>
+            </p>
+          ) : null}
           <p className="faint" style={{ marginTop: "0.8rem" }}>
             Estoque próprio {listing.stock} · Full {listing.fullStock} ({coverLabel(coverDays(listing))}) · {listing.sales30d} vendas e{" "}
             {listing.visits30d} visitas em 30 dias · conversão {pct(listing.conversionPct)} · {listing.imageCount} imagens

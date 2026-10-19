@@ -6,6 +6,7 @@ import { Mark } from "@/components/mark";
 import { useOffice } from "./office-context";
 
 const LINKS = [
+  { href: "/conexao", label: "Conectar" },
   { href: "/painel", label: "Painel" },
   { href: "/reuniao", label: "Reunião" },
   { href: "/agentes", label: "Agentes" },
@@ -33,7 +34,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav aria-label="Escritório">
           {LINKS.map((link) => {
-            const active = path === link.href || (link.href !== "/painel" && path.startsWith(link.href));
+            const active = path === link.href || (link.href !== "/painel" && link.href !== "/conexao" && path.startsWith(link.href));
             const count = link.count === "pending" ? pending : link.count === "questions" ? questions : 0;
             return (
               <Link key={link.href} href={link.href} className={active ? "nav active" : "nav"}>
@@ -44,9 +45,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <div className="side-foot">
-          <strong>{office.state?.account.name ?? "Casa Norte"}</strong>
-          <p>Demonstração local. Nada sai para o Mercado Livre.</p>
-          <Link href="/">Voltar ao site</Link>
+          <strong>{office.state?.account.nickname ?? "Mayke"}</strong>
+          <p>
+            {office.state?.connection.mode === "mercadolivre"
+              ? "Conta conectada. Preço e resposta saem para o Mercado Livre."
+              : "Demonstração Casa Norte."}
+          </p>
+          <Link href="/conexao">{office.state?.connection.mode === "mercadolivre" ? "Gerir conexão" : "Conectar conta"}</Link>
         </div>
       </aside>
       <div className="main">

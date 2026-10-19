@@ -402,6 +402,7 @@ export function createSeed(now = new Date()): AppState {
 
   return {
     version: 1,
+    connection: { mode: "demonstracao", syncedAt: null, notice: null },
     account: {
       name: "Casa Norte Utilidades",
       nickname: "CASANORTE",

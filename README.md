@@ -6,13 +6,26 @@ A conta **Casa Norte Utilidades** é uma demonstração. O motor de decisão é 
 
 ## Rodar
 
+Os comandos precisam ser executados dentro da pasta do projeto, não em `C:\Windows\System32`.
+
 ```bash
 npm install
 npm test
-npm run dev
+npm run dev -- -p 3001
 ```
 
-Abra o site em `/` e o escritório em `/painel`. O botão **Rodar squad** gera a reunião do momento.
+Abra `http://localhost:3001`. Se essa porta também estiver ocupada, troque o número.
+
+## Conectar o Mercado Livre
+
+1. Crie um aplicativo no DevCenter do Mercado Livre.
+2. Cadastre a redirect URI exatamente como a tela **Conectar** mostra, no mesmo host e porta do site. Exemplo: `http://localhost:3001/api/ml/callback`.
+3. Informe o App ID e a Secret Key nessa tela. Eles ficam só nesta máquina.
+4. Autorize com o usuário administrador da conta.
+5. Em cada anúncio, salve custo e frete. Sem custo, o squad não altera preço.
+6. **Rodar squad** publica no Mercado Livre o preço e a resposta que estiverem verdes ou que você aprovar.
+
+Promoção, Mercado Ads, troca de imagem e envio ao Full entram na ata e não são enviados para a conta. A demonstração Casa Norte continua disponível enquanto nenhuma conta estiver conectada.
 
 ## O que o squad decide
 

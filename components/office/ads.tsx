@@ -18,6 +18,9 @@ export function Ads() {
           <p className="muted">Teto atual: {pct(state.rules.acosMaxPct)}. Estoque baixo pausa. ACOS alto corta. ACOS folgado pode subir, com aprovação se o salto for grande.</p>
         </div>
       </header>
+      {state.connection.mode === "mercadolivre" ? (
+        <p className="banner">Mercado Ads ainda não entra na leitura. Esta tela mostra campanha quando a conta da demonstração está aberta.</p>
+      ) : null}
       <div className="squad-grid">
         {state.campaigns.map((campaign) => {
           const listing = state.listings.find((item) => item.id === campaign.listingId);

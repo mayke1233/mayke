@@ -37,4 +37,10 @@ node_modules/
 dist/
 *.tsbuildinfo
 data/state.json
+data/ml-app.json
+data/ml-session.json
+data/ml-oauth.json
+data/ml-last-error.json
+.env
+.env.local
 .DS_Store
