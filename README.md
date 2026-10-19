@@ -19,7 +19,7 @@ Abra `http://localhost:3001`. Se essa porta também estiver ocupada, troque o n�
 ## Conectar o Mercado Livre
 
 1. Crie um aplicativo no DevCenter do Mercado Livre.
-2. Cadastre a redirect URI exatamente como a tela **Conectar** mostra, no mesmo host e porta do site. Exemplo: `http://localhost:3001/api/ml/callback`.
+2. Cadastre uma redirect URI HTTPS pública, terminada em `/api/ml/callback`. O Mercado Livre responde 403 da CloudFront quando a URL usa `localhost` ou `127.0.0.1`. Com o site em `http://localhost:3001`, um túnel serve: `cloudflared tunnel --url http://localhost:3001`. Use `https://o-endereco-do-tunel/api/ml/callback` no DevCenter e na tela **Conectar**.
 3. Informe o App ID e a Secret Key nessa tela. Eles ficam só nesta máquina.
 4. Autorize com o usuário administrador da conta.
 5. Em cada anúncio, salve custo e frete. Sem custo, o squad não altera preço.

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useOffice } from "@/components/office/office-context";
 import { when } from "@/lib/format";
+import { redirectHostBlocked } from "@/lib/ml/redirect";
 
 interface Status {
   configured: boolean;
@@ -17,6 +18,7 @@ interface Status {
 
 const ERRORS: Record<string, string> = {
   credenciais: "Salve o App ID e a Secret Key antes de conectar.",
+  bloqueado: "O Mercado Livre bloqueia localhost e responde 403. Use um endereço HTTPS público.",
   negado: "A autorização foi cancelada no Mercado Livre.",
   codigo: "O Mercado Livre não devolveu o código de autorização.",
   token: "Não foi possível trocar o código pelo acesso.",
@@ -99,6 +101,7 @@ export function Conexao() {
   }
 
   const connected = office.state?.connection.mode === "mercadolivre";
+  const blocked = redirectHostBlocked(redirectUri);
 
   return (
     <section className="page conexao">
@@ -119,7 +122,7 @@ export function Conexao() {
           <h2>Crie o aplicativo</h2>
           <ol className="guide">
             <li>Abra o DevCenter do Mercado Livre e crie um aplicativo.</li>
-            <li>Em redirect URI, cole exatamente a URL abaixo. Ela muda se a porta do site mudar.</li>
+            <li>Em redirect URI, cole um HTTPS público que termine em /api/ml/callback. localhost recebe 403 da CloudFront.</li>
             <li>Copie o App ID e a Secret Key para o formulário ao lado.</li>
             <li>Entre com o usuário administrador da conta, não com um colaborador.</li>
           </ol>
@@ -172,10 +175,21 @@ export function Conexao() {
           <p className="faint">Última leitura: {when(office.state.connection.syncedAt)}</p>
         ) : null}
         {connected && office.state?.connection.notice ? <p style={{ marginTop: "0.6rem" }}>{office.state.connection.notice}</p> : null}
+        {blocked ? (
+          <p className="error-bar" style={{ marginTop: "0.8rem" }}>
+            A página 403 acontece porque a Redirect URI usa localhost. O Mercado Livre bloqueia esse host. Abra um túnel HTTPS até esta porta e cadastre a URL pública, terminada em /api/ml/callback, no DevCenter e neste formulário.
+          </p>
+        ) : null}
         <div className="row" style={{ marginTop: "0.9rem" }}>
-          <a className={`btn ${status?.configured ? "" : "secondary"}`} href="/api/ml/start">
-            {connected ? "Reautorizar" : "Conectar Mercado Livre"}
-          </a>
+          {blocked ? (
+            <button className="btn secondary" type="button" disabled>
+              {connected ? "Reautorizar" : "Conectar Mercado Livre"}
+            </button>
+          ) : (
+            <a className={`btn ${status?.configured ? "" : "secondary"}`} href="/api/ml/start">
+              {connected ? "Reautorizar" : "Conectar Mercado Livre"}
+            </a>
+          )}
           {connected ? (
             <button className="btn secondary" type="button" disabled={busy} onClick={() => void sync()}>
               Sincronizar agora

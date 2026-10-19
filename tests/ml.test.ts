@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runSquad } from "../lib/engine";
 import { codeChallenge, codeVerifier } from "../lib/ml/client";
 import { isRedirectUri } from "../lib/ml/config";
+import { redirectHostBlocked } from "../lib/ml/redirect";
 import { feePercent, preserveCosts } from "../lib/ml/map";
 import { publishChannel } from "../lib/ml/publish";
 import { createSeed } from "../lib/seed";
@@ -43,6 +44,9 @@ describe("conta do Mercado Livre", () => {
     expect(publishChannel({ type: "refresh_creative", listingId: "a" })).toBe("nao");
     expect(isRedirectUri("http://localhost:3001/api/ml/callback")).toBe(true);
     expect(isRedirectUri("http://localhost:3001/painel")).toBe(false);
+    expect(redirectHostBlocked("http://localhost:3001/api/ml/callback")).toBe(true);
+    expect(redirectHostBlocked("https://127.0.0.1:3001/api/ml/callback")).toBe(true);
+    expect(redirectHostBlocked("https://abc.trycloudflare.com/api/ml/callback")).toBe(false);
     expect(codeChallenge(codeVerifier())).toHaveLength(43);
   });
 });
