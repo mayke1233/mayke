@@ -157,9 +157,11 @@ export function Office() {
                 onChange={(event) => setFloor(Number(event.target.value))}
               />
               <small>
-                {belowFloor.length
-                  ? `${belowFloor.length} ação automática já executada ficaria abaixo desse piso.`
-                  : "Nenhuma ação automática do turno fica abaixo desse piso."}
+                {belowFloor.length === 0
+                  ? "Nenhuma ação automática do turno fica abaixo desse piso."
+                  : belowFloor.length === 1
+                    ? "1 ação automática já executada ficaria abaixo desse piso."
+                    : `${belowFloor.length} ações automáticas já executadas ficariam abaixo desse piso.`}
               </small>
             </label>
             {notice ? (
