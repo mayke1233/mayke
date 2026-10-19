@@ -34,6 +34,7 @@ export function Conexao() {
   const [pkce, setPkce] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [localOrigin, setLocalOrigin] = useState("http://localhost:3001");
 
   async function load() {
     const response = await fetch("/api/ml/app", { cache: "no-store" });
@@ -44,7 +45,9 @@ export function Conexao() {
   }
 
   useEffect(() => {
-    setRedirectUri((current) => current || `${window.location.origin}/api/ml/callback`);
+    setLocalOrigin(window.location.origin);
+    const candidate = `${window.location.origin}/api/ml/callback`;
+    setRedirectUri((current) => current || (redirectHostBlocked(candidate) ? "" : candidate));
     void load().catch(() => setMessage("Não consegui ler a configuração local."));
   }, []);
 
@@ -102,6 +105,8 @@ export function Conexao() {
 
   const connected = office.state?.connection.mode === "mercadolivre";
   const blocked = redirectHostBlocked(redirectUri);
+  const tunnelTarget = redirectHostBlocked(`${localOrigin}/api/ml/callback`) ? localOrigin : "http://localhost:3001";
+  const callbackToCopy = blocked || !redirectUri ? "https://seu-tunel.trycloudflare.com/api/ml/callback" : redirectUri;
 
   return (
     <section className="page conexao">
@@ -119,14 +124,15 @@ export function Conexao() {
       <div className="split">
         <article className="card">
           <p className="eyebrow">Passo 1</p>
-          <h2>Crie o aplicativo</h2>
+          <h2>Cadastre um HTTPS público</h2>
           <ol className="guide">
-            <li>Abra o DevCenter do Mercado Livre e crie um aplicativo.</li>
-            <li>Em redirect URI, cole um HTTPS público que termine em /api/ml/callback. localhost recebe 403 da CloudFront.</li>
-            <li>Copie o App ID e a Secret Key para o formulário ao lado.</li>
-            <li>Entre com o usuário administrador da conta, não com um colaborador.</li>
+            <li>No DevCenter, abra o aplicativo e apague a URI que usa localhost. O formulário exige https:// e o login responde 403 para esse host.</li>
+            <li>Com este site aberto, rode o comando abaixo e deixe essa janela do PowerShell aberta.</li>
+            <li>Copie o endereço https que aparecer e acrescente /api/ml/callback.</li>
+            <li>Cole essa URI no DevCenter e no campo Redirect URI do passo 2. Salve os dois. Deixe PKCE desmarcado.</li>
           </ol>
-          <p className="redirect-uri">{redirectUri || "…"}</p>
+          <p className="redirect-uri">cloudflared tunnel --url {tunnelTarget}</p>
+          <p className="redirect-uri">{callbackToCopy}</p>
           <a className="btn secondary small" href="https://developers.mercadolivre.com.br/devcenter" target="_blank" rel="noreferrer">
             Abrir o DevCenter
           </a>
